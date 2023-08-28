@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tiktok_tutorial/constants.dart';
-import 'package:tiktok_tutorial/models/user.dart' as model;
+import 'package:tiktok_tutorial/models/user_profile.dart';
 import 'package:tiktok_tutorial/views/screens/auth/login_screen.dart';
 import 'package:tiktok_tutorial/views/screens/home_screen.dart';
 
@@ -12,19 +11,67 @@ class AuthController extends GetxController {
   static AuthController instance = Get.find();
   late Rx<User?> _user;
   late Rx<File?> _pickedImage;
+  late Rx<ProfileUser?> _userProfile;
 
   File? get profilePhoto => _pickedImage.value;
   User get user => _user.value!;
+  ProfileUser? get userProfile => _userProfile.value;
 
   @override
   void onReady() {
     super.onReady();
-    _user = Rx<User?>(firebaseAuth.currentUser);
-    _user.bindStream(firebaseAuth.authStateChanges());
+
+    _user = Rx<User?>(supabase.auth.currentUser);
+    _userProfile = Rx<ProfileUser?>(null);
+
+    supabase.auth.onAuthStateChange.listen((data) async {
+      final AuthChangeEvent event = data.event;
+      final Session? session = data.session;
+
+      if (event == AuthChangeEvent.signedIn) {
+        _user.value = session!.user;
+        update();
+        var profileData = await supabase
+            .from('profiles')
+            .select('id, username, avatar_url')
+            .eq('id', user.id);
+
+        if (profileData.length > 0) {
+          final d = profileData[0];
+          _userProfile.value = ProfileUser(
+              username: d['username'],
+              email: user.email,
+              id: user.id,
+              avatarUrl: d['avatar_url']);
+          update();
+        }
+      } else if (event == AuthChangeEvent.signedOut) {
+        _user.value = null;
+      }
+    });
+
     ever(_user, _setInitialScreen);
   }
 
-  _setInitialScreen(User? user) {
+  // Future<dynamic> _getProfile() async {
+  //   try {
+  //     // any way to avoid this?
+
+  //     final profileData = await supabase
+  //         .from('profiles')
+  //         .select('id, username, avatar_url')
+  //         .eq('id', user.id)
+  //         .single();
+  //     return profileData;
+  //   } catch (e) {
+  //     Get.snackbar(
+  //       'Error fetching profile',
+  //       e.toString(),
+  //     );
+  //   }
+  // }
+
+  _setInitialScreen(user) {
     if (user == null) {
       Get.offAll(() => LoginScreen());
     } else {
@@ -42,19 +89,6 @@ class AuthController extends GetxController {
     _pickedImage = Rx<File?>(File(pickedImage!.path));
   }
 
-  // upload to firebase storage
-  Future<String> _uploadToStorage(File image) async {
-    Reference ref = firebaseStorage
-        .ref()
-        .child('profilePics')
-        .child(firebaseAuth.currentUser!.uid);
-
-    UploadTask uploadTask = ref.putFile(image);
-    TaskSnapshot snap = await uploadTask;
-    String downloadUrl = await snap.ref.getDownloadURL();
-    return downloadUrl;
-  }
-
   // registering the user
   void registerUser(
       String username, String email, String password, File? image) async {
@@ -63,22 +97,25 @@ class AuthController extends GetxController {
           email.isNotEmpty &&
           password.isNotEmpty &&
           image != null) {
-        // save out user to our ath and firebase firestore
-        UserCredential cred = await firebaseAuth.createUserWithEmailAndPassword(
+        // Create new user
+        final cred = await supabase.auth.signUp(
           email: email,
           password: password,
         );
-        String downloadUrl = await _uploadToStorage(image);
-        model.User user = model.User(
-          name: username,
-          email: email,
-          uid: cred.user!.uid,
-          profilePhoto: downloadUrl,
-        );
-        await firestore
-            .collection('users')
-            .doc(cred.user!.uid)
-            .set(user.toJson());
+
+        _user.value = cred.user;
+        update();
+
+        final String downloadUrl =
+            await supabase.storage.from('avatars').upload(
+                  "avatar_${user.id}.${image.path.split('.').last}",
+                  image,
+                  fileOptions:
+                      const FileOptions(cacheControl: '3600', upsert: false),
+                );
+
+        await supabase.from('profiles').insert(
+            {'id': user.id, 'username': username, 'avatar_url': downloadUrl});
       } else {
         Get.snackbar(
           'Error Creating Account',
@@ -96,8 +133,10 @@ class AuthController extends GetxController {
   void loginUser(String email, String password) async {
     try {
       if (email.isNotEmpty && password.isNotEmpty) {
-        await firebaseAuth.signInWithEmailAndPassword(
-            email: email, password: password);
+        await supabase.auth.signInWithPassword(
+          email: email,
+          password: password,
+        );
       } else {
         Get.snackbar(
           'Error Logging in',
@@ -106,13 +145,14 @@ class AuthController extends GetxController {
       }
     } catch (e) {
       Get.snackbar(
-        'Error Loggin gin',
+        'Error Logging in',
         e.toString(),
       );
     }
   }
 
   void signOut() async {
-    await firebaseAuth.signOut();
+    // await firebaseAuth.signOut();
+    await supabase.auth.signOut();
   }
 }

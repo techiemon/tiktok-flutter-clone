@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/controllers/profile_controller.dart';
 
@@ -35,6 +36,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: CircularProgressIndicator(),
             );
           }
+
+          final fileParts = controller.user['profilePhoto'].split('/');
+          final String publicUrl =
+              supabase.storage.from(fileParts[0]).getPublicUrl(fileParts[1],
+                  transform: const TransformOptions(
+                    width: 100,
+                    height: 100,
+                    resize: ResizeMode.cover,
+                  ));
+
           return Scaffold(
             appBar: AppBar(
               backgroundColor: Colors.black12,
@@ -65,7 +76,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               ClipOval(
                                 child: CachedNetworkImage(
                                   fit: BoxFit.cover,
-                                  imageUrl: controller.user['profilePhoto'],
+                                  imageUrl: publicUrl,
                                   height: 100,
                                   width: 100,
                                   placeholder: (context, url) =>
@@ -170,14 +181,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: Center(
                               child: InkWell(
                                 onTap: () {
-                                  if (widget.uid == authController.user.uid) {
+                                  if (widget.uid ==
+                                      supabase.auth.currentUser!.id) {
                                     authController.signOut();
                                   } else {
                                     controller.followUser();
                                   }
                                 },
                                 child: Text(
-                                  widget.uid == authController.user.uid
+                                  widget.uid == supabase.auth.currentUser!.id
                                       ? 'Sign Out'
                                       : controller.user['isFollowing']
                                           ? 'Unfollow'

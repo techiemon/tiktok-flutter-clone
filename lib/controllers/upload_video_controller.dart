@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tiktok_tutorial/constants.dart';
-import 'package:tiktok_tutorial/models/video.dart';
+// import 'package:tiktok_tutorial/models/video.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:uuid/uuid.dart';
 
 class UploadVideoController extends GetxController {
   _compressVideo(String videoPath) async {
@@ -14,12 +14,17 @@ class UploadVideoController extends GetxController {
     return compressedVideo!.file;
   }
 
-  Future<String> _uploadVideoToStorage(String id, String videoPath) async {
-    Reference ref = firebaseStorage.ref().child('videos').child(id);
+  Future<String> _uploadVideoToStorage(
+      String uid, String videoPath, String uuid) async {
+    final compressedVideo = await _compressVideo(videoPath);
+    final filename = "video_${uid}_${uuid}.mov";
 
-    UploadTask uploadTask = ref.putFile(await _compressVideo(videoPath));
-    TaskSnapshot snap = await uploadTask;
-    String downloadUrl = await snap.ref.getDownloadURL();
+    final String downloadUrl = await supabase.storage.from('videos').upload(
+          filename,
+          compressedVideo,
+          fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+        );
+
     return downloadUrl;
   }
 
@@ -28,43 +33,58 @@ class UploadVideoController extends GetxController {
     return thumbnail;
   }
 
-  Future<String> _uploadImageToStorage(String id, String videoPath) async {
-    Reference ref = firebaseStorage.ref().child('thumbnails').child(id);
-    UploadTask uploadTask = ref.putFile(await _getThumbnail(videoPath));
-    TaskSnapshot snap = await uploadTask;
-    String downloadUrl = await snap.ref.getDownloadURL();
+  Future<String> _uploadImageToStorage(
+      String uid, String thumbnailPath, String uuid) async {
+    final String downloadUrl = await supabase.storage.from('videos').upload(
+          "thumbnail_${uid}_${uuid}.jpg",
+          await _getThumbnail(thumbnailPath),
+          fileOptions: const FileOptions(cacheControl: '3600', upsert: false),
+        );
+
     return downloadUrl;
   }
 
   // upload video
   uploadVideo(String songName, String caption, String videoPath) async {
     try {
-      String uid = firebaseAuth.currentUser!.uid;
-      DocumentSnapshot userDoc =
-          await firestore.collection('users').doc(uid).get();
-      // get id
-      var allDocs = await firestore.collection('videos').get();
-      int len = allDocs.docs.length;
-      String videoUrl = await _uploadVideoToStorage("Video $len", videoPath);
-      String thumbnail = await _uploadImageToStorage("Video $len", videoPath);
+      String uid = supabase.auth.currentUser!.id;
+      const uuidClass = Uuid();
+      final uuid = uuidClass.v4();
+      String videoUrl = await _uploadVideoToStorage(uid, videoPath, uuid);
+      String thumbnail = await _uploadImageToStorage(uid, videoPath, uuid);
 
-      Video video = Video(
-        username: (userDoc.data()! as Map<String, dynamic>)['name'],
-        uid: uid,
-        id: "Video $len",
-        likes: [],
-        commentCount: 0,
-        shareCount: 0,
-        songName: songName,
-        caption: caption,
-        videoUrl: videoUrl,
-        profilePhoto: (userDoc.data()! as Map<String, dynamic>)['profilePhoto'],
-        thumbnail: thumbnail,
-      );
+      // create video object
+      await supabase.from('videos').insert({
+        // 'id': uuid,
+        'uid': uid,
+        'username': authController.userProfile!.username,
+        'likes': 0,
+        'commentCount': 0,
+        'shareCount': 0,
+        'songName': songName,
+        'caption': caption,
+        'videoUrl': videoUrl,
+        'profilePhoto': authController.userProfile!.avatarUrl,
+        'thumbnail': thumbnail,
+      });
 
-      await firestore.collection('videos').doc('Video $len').set(
-            video.toJson(),
-          );
+      // Video video = Video(
+      //   username: authController.userProfile!.username,
+      //   uid: uid,
+      //   id: "Video $uuid",
+      //   likes: [],
+      //   commentCount: 0,
+      //   shareCount: 0,
+      //   songName: songName,
+      //   caption: caption,
+      //   videoUrl: videoUrl,
+      //   profilePhoto: authController.userProfile!.avatarUrl,
+      //   thumbnail: thumbnail,
+      // );
+
+      // await firestore.collection('videos').doc('Video $len').set(
+      //       video.toJson(),
+      //     );
       Get.back();
     } catch (e) {
       Get.snackbar(

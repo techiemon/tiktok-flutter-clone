@@ -1,12 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Video {
   String username;
   String uid;
-  String id;
-  List likes;
-  int commentCount;
-  int shareCount;
+  int id;
+  int likes;
+  String commentCount;
+  String shareCount;
   String songName;
   String caption;
   String videoUrl;
@@ -27,35 +27,33 @@ class Video {
     required this.thumbnail,
   });
 
-  Map<String, dynamic> toJson() => {
-        "username": username,
-        "uid": uid,
-        "profilePhoto": profilePhoto,
-        "id": id,
-        "likes": likes,
-        "commentCount": commentCount,
-        "shareCount": shareCount,
-        "songName": songName,
-        "caption": caption,
-        "videoUrl": videoUrl,
-        "thumbnail": thumbnail,
-      };
+  // Map<String, dynamic> toJson() => {
+  //       "username": username,
+  //       "uid": uid,
+  //       "profilePhoto": profilePhoto,
+  //       "id": id,
+  //       "likes": likes,
+  //       "commentCount": commentCount,
+  //       "shareCount": shareCount,
+  //       "songName": songName,
+  //       "caption": caption,
+  //       "videoUrl": videoUrl,
+  //       "thumbnail": thumbnail,
+  //     };
 
-  static Video fromSnap(DocumentSnapshot snap) {
-    var snapshot = snap.data() as Map<String, dynamic>;
-
+  factory Video.fromMap({required Map<String, dynamic> map}) {
     return Video(
-      username: snapshot['username'],
-      uid: snapshot['uid'],
-      id: snapshot['id'],
-      likes: snapshot['likes'],
-      commentCount: snapshot['commentCount'],
-      shareCount: snapshot['shareCount'],
-      songName: snapshot['songName'],
-      caption: snapshot['caption'],
-      videoUrl: snapshot['videoUrl'],
-      profilePhoto: snapshot['profilePhoto'],
-      thumbnail: snapshot['thumbnail'],
+      username: map['username'],
+      uid: map['uid'],
+      id: map['id'],
+      likes: map['likes'],
+      commentCount: map['commentCount'],
+      shareCount: map['shareCount'],
+      songName: map['songName'],
+      caption: map['caption'],
+      videoUrl: map['videoUrl'],
+      profilePhoto: map['profilePhoto'],
+      thumbnail: map['thumbnail'],
     );
   }
 }

@@ -15,22 +15,29 @@ class CommentController extends GetxController {
   }
 
   getComment() async {
-    _comments.bindStream(
-      firestore
-          .collection('videos')
-          .doc(_postId)
-          .collection('comments')
-          .snapshots()
-          .map(
-        (QuerySnapshot query) {
-          List<Comment> retValue = [];
-          for (var element in query.docs) {
-            retValue.add(Comment.fromSnap(element));
-          }
-          return retValue;
-        },
-      ),
-    );
+    supabase
+        .from('videos')
+        .stream(primaryKey: ['id']).listen((List<Map<String, dynamic>> data) {
+      // Do something awesome with the data
+      // print(data);
+    });
+
+    // _comments.bindStream(
+    //   firestore
+    //       .collection('videos')
+    //       .doc(_postId)
+    //       .collection('comments')
+    //       .snapshots()
+    //       .map(
+    //     (QuerySnapshot query) {
+    //       List<Comment> retValue = [];
+    //       for (var element in query.docs) {
+    //         retValue.add(Comment.fromSnap(element));
+    //       }
+    //       return retValue;
+    //     },
+    //   ),
+    // );
   }
 
   postComment(String commentText) async {
@@ -38,7 +45,7 @@ class CommentController extends GetxController {
       if (commentText.isNotEmpty) {
         DocumentSnapshot userDoc = await firestore
             .collection('users')
-            .doc(authController.user.uid)
+            .doc(authController.user.id)
             .get();
         var allDocs = await firestore
             .collection('videos')
@@ -53,22 +60,22 @@ class CommentController extends GetxController {
           datePublished: DateTime.now(),
           likes: [],
           profilePhoto: (userDoc.data()! as dynamic)['profilePhoto'],
-          uid: authController.user.uid,
+          uid: authController.user.id,
           id: 'Comment $len',
         );
-        await firestore
-            .collection('videos')
-            .doc(_postId)
-            .collection('comments')
-            .doc('Comment $len')
-            .set(
-              comment.toJson(),
-            );
-        DocumentSnapshot doc =
-            await firestore.collection('videos').doc(_postId).get();
-        await firestore.collection('videos').doc(_postId).update({
-          'commentCount': (doc.data()! as dynamic)['commentCount'] + 1,
-        });
+        // await firestore
+        //     .collection('videos')
+        //     .doc(_postId)
+        //     .collection('comments')
+        //     .doc('Comment $len')
+        //     .set(
+        //       comment.toJson(),
+        //     );
+        // DocumentSnapshot doc =
+        //     await firestore.collection('videos').doc(_postId).get();
+        // await firestore.collection('videos').doc(_postId).update({
+        //   'commentCount': (doc.data()! as dynamic)['commentCount'] + 1,
+        // });
       }
     } catch (e) {
       Get.snackbar(
@@ -79,7 +86,7 @@ class CommentController extends GetxController {
   }
 
   likeComment(String id) async {
-    var uid = authController.user.uid;
+    var uid = authController.user.id;
     DocumentSnapshot doc = await firestore
         .collection('videos')
         .doc(_postId)
