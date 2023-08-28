@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tiktok_tutorial/controllers/auth_controller.dart';
+import 'package:tiktok_tutorial/controllers/comment_controller.dart';
 import 'package:tiktok_tutorial/views/screens/add_video_screen.dart';
+import 'package:tiktok_tutorial/views/screens/comment_screen.dart';
 import 'package:tiktok_tutorial/views/screens/profile_screen.dart';
 // import 'package:tiktok_tutorial/views/screens/search_screen.dart';
 import 'package:tiktok_tutorial/views/screens/video_screen.dart';
@@ -10,7 +12,7 @@ List pages = [
   VideoScreen(),
   const Text('Search Screen'),
   const AddVideoScreen(),
-  const Text('Messages Screen'),
+  CommentScreen(id: CommentController().postId),
   ProfileScreen(uid: authController.user.id),
   // VideoScreen(),
   // SearchScreen(),

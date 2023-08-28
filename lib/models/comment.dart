@@ -1,13 +1,11 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Comment {
   String username;
   String comment;
-  final DateTime datePublished;
-  List likes;
+  String datePublished;
+  String likes;
   String profilePhoto;
   String uid;
-  String id;
+  int id;
 
   Comment({
     required this.username,
@@ -33,7 +31,7 @@ class Comment {
     return Comment(
       username: map['username'],
       comment: map['comment'],
-      datePublished: map['datePublished'],
+      datePublished: map['created_at'],
       likes: map['likes'],
       profilePhoto: map['profilePhoto'],
       uid: map['uid'],

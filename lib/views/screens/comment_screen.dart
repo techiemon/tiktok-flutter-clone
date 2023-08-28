@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/controllers/comment_controller.dart';
+import 'package:tiktok_tutorial/models/comment.dart';
 import 'package:timeago/timeago.dart' as tago;
 
 class CommentScreen extends StatelessWidget {
@@ -27,75 +28,84 @@ class CommentScreen extends StatelessWidget {
           child: Column(
             children: [
               Expanded(
-                child: Obx(() {
-                  return ListView.builder(
-                      itemCount: commentController.comments.length,
-                      itemBuilder: (context, index) {
-                        final comment = commentController.comments[index];
-                        return ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: Colors.black,
-                            backgroundImage: NetworkImage(comment.profilePhoto),
-                          ),
-                          title: Row(
-                            children: [
-                              Text(
-                                "${comment.username}  ",
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Text(
-                                comment.comment,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                          subtitle: Row(
-                            children: [
-                              Text(
-                                tago.format(
-                                  comment.datePublished,
-                                ),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              const SizedBox(
-                                width: 10,
-                              ),
-                              Text(
-                                '${comment.likes.length} likes',
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.white,
-                                ),
-                              )
-                            ],
-                          ),
-                          trailing: InkWell(
-                            onTap: () =>
-                                commentController.likeComment(comment.id),
-                            child: Icon(
-                              Icons.favorite,
-                              size: 25,
-                              color:
-                                  comment.likes.contains(authController.user.id)
-                                      ? Colors.red
-                                      : Colors.white,
+                  child: StreamBuilder<List<Comment>>(
+                stream: commentController.comments,
+                builder: ((context, snapshot) {
+                  if (snapshot.hasData) {
+                    final comments = snapshot.data;
+                    return ListView.builder(
+                        itemCount: comments!.length,
+                        itemBuilder: (context, index) {
+                          final comment = comments[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundColor: Colors.black,
+                              // backgroundImage: NetworkImage(comment.profilePhoto),
                             ),
-                          ),
-                        );
-                      });
+                            title: Row(
+                              children: [
+                                Text(
+                                  "${comment.username}  ",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                                Text(
+                                  comment.comment,
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            subtitle: Row(
+                              children: [
+                                Text(
+                                  tago.format(
+                                    DateTime.parse(comment.datePublished),
+                                  ),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                                Text(
+                                  '0', // '${comment.likes.length} likes',
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              ],
+                            ),
+                            trailing: InkWell(
+                              onTap: () => commentController
+                                  .likeComment(comment.id.toString()),
+                              child: Icon(
+                                Icons.favorite,
+                                size: 25,
+                                color: Colors.white, //.likes
+                                //     .contains(authController.user.id)
+                                // ? Colors.red
+                                // : Colors.white,
+                              ),
+                            ),
+                          );
+                        });
+                  } else {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
                 }),
-              ),
+              )),
               const Divider(),
               ListTile(
                 title: TextFormField(
