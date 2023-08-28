@@ -2,9 +2,9 @@ class Comment {
   String username;
   String comment;
   String datePublished;
-  String likes;
+  int likes;
   String profilePhoto;
-  String uid;
+  int uid;
   int id;
 
   Comment({
