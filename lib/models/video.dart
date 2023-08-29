@@ -30,7 +30,7 @@ class Video {
       username: map['username'],
       uid: map['uid'],
       id: map['id'],
-      likes: map['likes'],
+      likes: map['likes'] ?? [],
       commentCount: map['commentCount'],
       shareCount: map['shareCount'],
       songName: map['songName'],

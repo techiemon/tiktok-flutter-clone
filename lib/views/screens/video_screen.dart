@@ -5,7 +5,6 @@ import 'package:tiktok_tutorial/models/video.dart';
 import 'package:tiktok_tutorial/views/screens/comment_screen.dart';
 import 'package:tiktok_tutorial/views/widgets/circle_animation.dart';
 import 'package:tiktok_tutorial/views/widgets/video_player_iten.dart';
-// import 'package:video_player/video_player.dart';
 import 'package:get/get.dart';
 
 class VideoScreen extends StatelessWidget {
@@ -178,10 +177,10 @@ class VideoScreen extends StatelessWidget {
                                         child: Icon(
                                           Icons.favorite,
                                           size: 40,
-                                          // color: data.likes.contains(
-                                          //         authController.user.id)
-                                          //     ? Colors.red
-                                          //     : Colors.white,
+                                          color: data.likes!.contains(
+                                                  authController.user.id)
+                                              ? Colors.red
+                                              : Colors.white,
                                         ),
                                       ),
                                       const SizedBox(height: 7),
