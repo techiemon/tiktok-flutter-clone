@@ -16,6 +16,8 @@ class CommentController extends GetxController {
 
   getComment() async {
     try {
+      var wtf = postId.isEmpty ? "*" : postId;
+      print(wtf);
       _comments = supabase
           .from('comments')
           .stream(primaryKey: ['id'])
@@ -23,7 +25,10 @@ class CommentController extends GetxController {
           .map((maps) => maps.map((map) => Comment.fromMap(map: map)).toList());
       update();
     } catch (e) {
-      print(e.toString());
+      Get.snackbar(
+        'Error getting comments',
+        e.toString(),
+      );
     }
   }
 

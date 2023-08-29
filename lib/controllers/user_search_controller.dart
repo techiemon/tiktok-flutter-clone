@@ -27,7 +27,10 @@ class UserSearchController extends GetxController {
         _users.value.add(ProfileUser.fromMap(map: search[i]));
       }
     } catch (e) {
-      print(e.toString());
+      Get.snackbar(
+        'Error getting users',
+        e.toString(),
+      );
     }
   }
 }

@@ -54,24 +54,6 @@ class AuthController extends GetxController {
     ever(_user, _setInitialScreen);
   }
 
-  // Future<dynamic> _getProfile() async {
-  //   try {
-  //     // any way to avoid this?
-
-  //     final profileData = await supabase
-  //         .from('profiles')
-  //         .select('id, username, avatar_url')
-  //         .eq('id', user.id)
-  //         .single();
-  //     return profileData;
-  //   } catch (e) {
-  //     Get.snackbar(
-  //       'Error fetching profile',
-  //       e.toString(),
-  //     );
-  //   }
-  // }
-
   _setInitialScreen(user) {
     if (user == null) {
       Get.offAll(() => LoginScreen());

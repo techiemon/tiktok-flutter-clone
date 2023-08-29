@@ -16,7 +16,10 @@ class VideoController extends GetxController {
           (maps) => maps.map((map) => Video.fromMap(map: map)).toList());
       update();
     } catch (e) {
-      print(e.toString());
+      Get.snackbar(
+        'Error getting videos',
+        e.toString(),
+      );
     }
   }
 
