@@ -25,20 +25,6 @@ class Video {
     required this.thumbnail,
   });
 
-  // Map<String, dynamic> toJson() => {
-  //       "username": username,
-  //       "uid": uid,
-  //       "profilePhoto": profilePhoto,
-  //       "id": id,
-  //       "likes": likes,
-  //       "commentCount": commentCount,
-  //       "shareCount": shareCount,
-  //       "songName": songName,
-  //       "caption": caption,
-  //       "videoUrl": videoUrl,
-  //       "thumbnail": thumbnail,
-  //     };
-
   factory Video.fromMap({required Map<String, dynamic> map}) {
     return Video(
       username: map['username'],

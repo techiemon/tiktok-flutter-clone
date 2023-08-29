@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/controllers/comment_controller.dart';
 import 'package:tiktok_tutorial/models/comment.dart';
@@ -13,7 +14,7 @@ class CommentScreen extends StatelessWidget {
   }) : super(key: key);
 
   final TextEditingController _commentController = TextEditingController();
-  final CommentController commentController = Get.put(CommentController());
+  final CommentController commentController = CommentController();
 
   @override
   Widget build(BuildContext context) {
@@ -37,10 +38,19 @@ class CommentScreen extends StatelessWidget {
                         itemCount: comments!.length,
                         itemBuilder: (context, index) {
                           final comment = comments[index];
+                          final fileParts = comment.profilePhoto.split('/');
+                          final String publicUrl = supabase.storage
+                              .from(fileParts[0])
+                              .getPublicUrl(fileParts[1],
+                                  transform: const TransformOptions(
+                                    width: 100,
+                                    height: 100,
+                                    resize: ResizeMode.cover,
+                                  ));
                           return ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Colors.black,
-                              // backgroundImage: NetworkImage(comment.profilePhoto),
+                              backgroundImage: NetworkImage(publicUrl),
                             ),
                             title: Row(
                               children: [
@@ -77,7 +87,7 @@ class CommentScreen extends StatelessWidget {
                                   width: 10,
                                 ),
                                 Text(
-                                  '0', // '${comment.likes.length} likes',
+                                  '${comment.likes.toString()} likes',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.white,
@@ -134,8 +144,11 @@ class CommentScreen extends StatelessWidget {
                   ),
                 ),
                 trailing: TextButton(
-                  onPressed: () =>
-                      commentController.postComment(_commentController.text),
+                  onPressed: () {
+                    commentController.postComment(_commentController.text);
+                    _commentController.clear();
+                    Navigator.of(context).pop();
+                  },
                   child: const Text(
                     'Send',
                     style: TextStyle(

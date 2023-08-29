@@ -6,6 +6,7 @@ import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/user_profile.dart';
 import 'package:tiktok_tutorial/views/screens/auth/login_screen.dart';
 import 'package:tiktok_tutorial/views/screens/home_screen.dart';
+import 'package:uuid/uuid.dart';
 
 class AuthController extends GetxController {
   static AuthController instance = Get.find();
@@ -41,7 +42,7 @@ class AuthController extends GetxController {
           _userProfile.value = ProfileUser(
               username: d['username'],
               email: user.email,
-              id: user.id,
+              id: const Uuid().v4(),
               avatarUrl: d['avatar_url']);
           update();
         }

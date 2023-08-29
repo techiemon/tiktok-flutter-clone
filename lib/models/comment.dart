@@ -17,16 +17,6 @@ class Comment {
     required this.id,
   });
 
-  // Map<String, dynamic> toJson() => {
-  //       'username': username,
-  //       'comment': comment,
-  //       'datePublished': datePublished,
-  //       'likes': likes,
-  //       'profilePhoto': profilePhoto,
-  //       'uid': uid,
-  //       'id': id,
-  //     };
-
   factory Comment.fromMap({required Map<String, dynamic> map}) {
     return Comment(
       username: map['username'],
