@@ -42,7 +42,7 @@ class AuthController extends GetxController {
           _userProfile.value = ProfileUser(
               username: d['username'],
               email: user.email,
-              id: const Uuid().v4(),
+              id: user.id,
               avatarUrl: d['avatar_url']);
           update();
         }

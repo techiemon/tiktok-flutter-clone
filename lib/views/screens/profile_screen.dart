@@ -150,7 +150,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               Column(
                                 children: [
                                   Text(
-                                    controller.user['likes'],
+                                    controller.user['likes'].toString(),
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -219,8 +219,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             itemBuilder: (context, index) {
                               String thumbnail =
                                   controller.user['thumbnails'][index];
+                              final fileParts = thumbnail.split('/');
+                              final String publicUrl = supabase.storage
+                                  .from(fileParts[0])
+                                  .getPublicUrl(fileParts[1],
+                                      transform: const TransformOptions(
+                                        width: 200,
+                                        height: 200,
+                                        resize: ResizeMode.cover,
+                                      ));
+
                               return CachedNetworkImage(
-                                imageUrl: thumbnail,
+                                imageUrl: publicUrl,
                                 fit: BoxFit.cover,
                               );
                             },

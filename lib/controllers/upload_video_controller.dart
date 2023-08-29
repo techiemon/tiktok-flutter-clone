@@ -58,7 +58,7 @@ class UploadVideoController extends GetxController {
         // 'id': uuid,
         'uid': uid,
         'username': authController.userProfile!.username,
-        'likes': 0,
+        'likes': [],
         'commentCount': 0,
         'shareCount': 0,
         'songName': songName,

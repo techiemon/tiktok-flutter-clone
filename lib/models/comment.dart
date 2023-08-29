@@ -2,7 +2,7 @@ class Comment {
   String username;
   String comment;
   String datePublished;
-  int likes;
+  List? likes;
   String profilePhoto;
   int uid;
   int id;
@@ -22,7 +22,7 @@ class Comment {
       username: map['username'],
       comment: map['comment'],
       datePublished: map['created_at'],
-      likes: map['likes'],
+      likes: map['likes'] ?? [],
       profilePhoto: map['profilePhoto'],
       uid: map['uid'],
       id: map['id'],

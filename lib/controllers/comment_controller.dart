@@ -36,7 +36,7 @@ class CommentController extends GetxController {
           'username': profile!.username,
           'profilePhoto': profile.avatarUrl,
           'uid': postId,
-          'likes': 0,
+          'likes': [],
         });
       }
     } catch (e) {
