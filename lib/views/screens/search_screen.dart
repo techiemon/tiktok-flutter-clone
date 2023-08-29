@@ -45,15 +45,15 @@ class SearchScreen extends StatelessWidget {
                   itemCount: searchController.users.length,
                   itemBuilder: (context, index) {
                     ProfileUser user = searchController.users[index];
-                    // final fileParts = user.avatarUrl.split('/');
-                    // final String publicUrl = supabase.storage
-                    //     .from(fileParts[0])
-                    //     .getPublicUrl(fileParts[1],
-                    //         transform: const TransformOptions(
-                    //           width: 100,
-                    //           height: 100,
-                    //           resize: ResizeMode.cover,
-                    //         ));
+                    final fileParts = user.avatarUrl.split('/');
+                    final String publicUrl = supabase.storage
+                        .from(fileParts[0])
+                        .getPublicUrl(fileParts[1],
+                            transform: const TransformOptions(
+                              width: 100,
+                              height: 100,
+                              resize: ResizeMode.cover,
+                            ));
 
                     return InkWell(
                       onTap: () => Navigator.of(context).push(
@@ -64,10 +64,10 @@ class SearchScreen extends StatelessWidget {
                       ),
                       child: ListTile(
                         leading: CircleAvatar(
-                            // backgroundImage: NetworkImage(
-                            //   publicUrl,
-                            // ),
-                            ),
+                          backgroundImage: NetworkImage(
+                            publicUrl,
+                          ),
+                        ),
                         title: Text(
                           user.username,
                           style: const TextStyle(
