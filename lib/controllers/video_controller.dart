@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/video.dart';
@@ -24,16 +26,22 @@ class VideoController extends GetxController {
   }
 
   likeVideo(String id) async {
-    // DocumentSnapshot doc = await firestore.collection('videos').doc(id).get();
-    // var uid = authController.user.id;
-    // if ((doc.data()! as dynamic)['likes'].contains(uid)) {
-    //   await firestore.collection('videos').doc(id).update({
-    //     'likes': FieldValue.arrayRemove([uid]),
-    //   });
-    // } else {
-    //   await firestore.collection('videos').doc(id).update({
-    //     'likes': FieldValue.arrayUnion([uid]),
-    //   });
-    // }
+    final video = await supabase.from('videos').select().eq('id', id).single();
+    var uid = authController.user.id;
+    var videoData = video['likes'] ?? [];
+    final likes = [];
+    videoData.forEach((element) {
+      likes.add(element);
+    });
+
+    if (likes.contains(uid)) {
+      likes.remove(uid);
+      var newLikes = likes;
+      await supabase.from('videos').update({'likes': newLikes}).eq('id', id);
+    } else {
+      likes.add(uid);
+      var newLikes = likes;
+      await supabase.from('videos').update({'likes': newLikes}).eq('id', id);
+    }
   }
 }

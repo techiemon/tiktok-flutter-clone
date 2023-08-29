@@ -221,26 +221,26 @@ class VideoScreen extends StatelessWidget {
                                       )
                                     ],
                                   ),
-                                  Column(
-                                    children: [
-                                      InkWell(
-                                        onTap: () {},
-                                        child: const Icon(
-                                          Icons.reply,
-                                          size: 40,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 7),
-                                      Text(
-                                        data.shareCount.toString(),
-                                        style: const TextStyle(
-                                          fontSize: 20,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    ],
-                                  ),
+                                  // Column(
+                                  //   children: [
+                                  //     InkWell(
+                                  //       onTap: () {},
+                                  //       child: const Icon(
+                                  //         Icons.reply,
+                                  //         size: 40,
+                                  //         color: Colors.white,
+                                  //       ),
+                                  //     ),
+                                  //     const SizedBox(height: 7),
+                                  //     Text(
+                                  //       data.shareCount.toString(),
+                                  //       style: const TextStyle(
+                                  //         fontSize: 20,
+                                  //         color: Colors.white,
+                                  //       ),
+                                  //     )
+                                  //   ],
+                                  // ),
                                   CircleAnimation(
                                     child: buildMusicAlbum(publicProfileUrl),
                                   ),
