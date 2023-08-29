@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:tiktok_tutorial/constants.dart';
+import 'package:tiktok_tutorial/models/user_profile.dart';
 
 class ProfileController extends GetxController {
   final Rx<Map<String, dynamic>> _user = Rx<Map<String, dynamic>>({});
@@ -23,8 +24,11 @@ class ProfileController extends GetxController {
     //   thumbnails.add((myVideos.docs[i].data() as dynamic)['thumbnail']);
     // }
 
-    final profileData = authController.userProfile;
-    String profilePhoto = profileData!.avatarUrl;
+    final profile =
+        await supabase.from('profiles').select().eq('id', _uid.value).single();
+
+    final profileData = ProfileUser.fromMap(map: profile);
+    String profilePhoto = profileData.avatarUrl;
     // int likes = 0;
     // int followers = 0;
     // int following = 0;
