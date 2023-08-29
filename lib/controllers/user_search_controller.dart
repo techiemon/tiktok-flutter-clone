@@ -1,24 +1,33 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/user_profile.dart';
 
 class UserSearchController extends GetxController {
-  final Rx<List<User>> _searchedUsers = Rx<List<User>>([]);
+  // late Stream<List<ProfileUser>> _searchedUsers;
 
-  List<User> get searchedUsers => _searchedUsers.value;
+  final Rx<List<ProfileUser>> _users = Rx<List<ProfileUser>>([]);
+  List<ProfileUser> get users => _users.value;
 
-  searchUser(String typedUser) async {
-    _searchedUsers.bindStream(firestore
-        .collection('users')
-        .where('name', isGreaterThanOrEqualTo: typedUser)
-        .snapshots()
-        .map((QuerySnapshot query) {
-      List<User> retVal = [];
-      for (var elem in query.docs) {
-        retVal.add(User.fromSnap(elem));
+  // Stream<List<ProfileUser>> get searchedUsers => _searchedUsers;
+
+  @override
+  Future<void> onInit() async {
+    super.onInit();
+  }
+
+  searchUser(String? typedUser) async {
+    try {
+      final search = await supabase
+          .from('profiles')
+          .select()
+          .ilike('username', '%$typedUser%');
+
+      _users.value = [];
+      for (int i = 0; i < search.length; i++) {
+        _users.value.add(ProfileUser.fromMap(map: search[i]));
       }
-      return retVal;
-    }));
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

@@ -68,23 +68,6 @@ class UploadVideoController extends GetxController {
         'thumbnail': thumbnail,
       });
 
-      // Video video = Video(
-      //   username: authController.userProfile!.username,
-      //   uid: uid,
-      //   id: "Video $uuid",
-      //   likes: [],
-      //   commentCount: 0,
-      //   shareCount: 0,
-      //   songName: songName,
-      //   caption: caption,
-      //   videoUrl: videoUrl,
-      //   profilePhoto: authController.userProfile!.avatarUrl,
-      //   thumbnail: thumbnail,
-      // );
-
-      // await firestore.collection('videos').doc('Video $len').set(
-      //       video.toJson(),
-      //     );
       Get.back();
     } catch (e) {
       Get.snackbar(

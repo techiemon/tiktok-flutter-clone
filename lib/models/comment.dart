@@ -1,13 +1,11 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Comment {
   String username;
   String comment;
-  final DateTime datePublished;
-  List likes;
+  String datePublished;
+  int likes;
   String profilePhoto;
-  String uid;
-  String id;
+  int uid;
+  int id;
 
   Comment({
     required this.username,
@@ -19,21 +17,11 @@ class Comment {
     required this.id,
   });
 
-  // Map<String, dynamic> toJson() => {
-  //       'username': username,
-  //       'comment': comment,
-  //       'datePublished': datePublished,
-  //       'likes': likes,
-  //       'profilePhoto': profilePhoto,
-  //       'uid': uid,
-  //       'id': id,
-  //     };
-
   factory Comment.fromMap({required Map<String, dynamic> map}) {
     return Comment(
       username: map['username'],
       comment: map['comment'],
-      datePublished: map['datePublished'],
+      datePublished: map['created_at'],
       likes: map['likes'],
       profilePhoto: map['profilePhoto'],
       uid: map['uid'],

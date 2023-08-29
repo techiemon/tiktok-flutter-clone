@@ -11,17 +11,10 @@ class ProfileUser {
     required this.avatarUrl,
   });
 
-  // Map<String, dynamic> toJson() => {
-  //       "username": username,
-  //       "avatarUrl": avatarUrl,
-  //       "email": email,
-  //       "id": id,
-  //     };
-
   factory ProfileUser.fromMap({required Map<String, dynamic> map}) {
     return ProfileUser(
       email: map['email'],
-      avatarUrl: map['avatarUrl'],
+      avatarUrl: map['avatar_url'],
       id: map['id'],
       username: map['username'],
     );

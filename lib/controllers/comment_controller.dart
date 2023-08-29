@@ -3,10 +3,11 @@ import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/comment.dart';
 
 class CommentController extends GetxController {
-  final Rx<List<Comment>> _comments = Rx<List<Comment>>([]);
-  List<Comment> get comments => _comments.value;
+  late Stream<List<Comment>> _comments;
+  Stream<List<Comment>> get comments => _comments;
 
   String _postId = "";
+  String get postId => _postId;
 
   updatePostId(String id) {
     _postId = id;
@@ -14,67 +15,29 @@ class CommentController extends GetxController {
   }
 
   getComment() async {
-    supabase
-        .from('videos')
-        .stream(primaryKey: ['id']).listen((List<Map<String, dynamic>> data) {
-      // Do something awesome with the data
-      // print(data);
-    });
-
-    // _comments.bindStream(
-    //   firestore
-    //       .collection('videos')
-    //       .doc(_postId)
-    //       .collection('comments')
-    //       .snapshots()
-    //       .map(
-    //     (QuerySnapshot query) {
-    //       List<Comment> retValue = [];
-    //       for (var element in query.docs) {
-    //         retValue.add(Comment.fromSnap(element));
-    //       }
-    //       return retValue;
-    //     },
-    //   ),
-    // );
+    try {
+      _comments = supabase
+          .from('comments')
+          .stream(primaryKey: ['id'])
+          .eq('uid', postId)
+          .map((maps) => maps.map((map) => Comment.fromMap(map: map)).toList());
+      update();
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   postComment(String commentText) async {
     try {
       if (commentText.isNotEmpty) {
-        // DocumentSnapshot userDoc = await firestore
-        //     .collection('users')
-        //     .doc(authController.user.id)
-        //     .get();
-        // var allDocs = await firestore
-        //     .collection('videos')
-        //     .doc(_postId)
-        //     .collection('comments')
-        //     .get();
-        // int len = allDocs.docs.length;
-
-        // Comment comment = Comment(
-        //   username: (userDoc.data()! as dynamic)['name'],
-        //   comment: commentText.trim(),
-        //   datePublished: DateTime.now(),
-        //   likes: [],
-        //   profilePhoto: (userDoc.data()! as dynamic)['profilePhoto'],
-        //   uid: authController.user.id,
-        //   id: 'Comment $len',
-        // );
-        // await firestore
-        //     .collection('videos')
-        //     .doc(_postId)
-        //     .collection('comments')
-        //     .doc('Comment $len')
-        //     .set(
-        //       comment.toJson(),
-        //     );
-        // DocumentSnapshot doc =
-        //     await firestore.collection('videos').doc(_postId).get();
-        // await firestore.collection('videos').doc(_postId).update({
-        //   'commentCount': (doc.data()! as dynamic)['commentCount'] + 1,
-        // });
+        final profile = authController.userProfile;
+        await supabase.from('comments').insert({
+          'comment': commentText.trim(),
+          'username': profile!.username,
+          'profilePhoto': profile.avatarUrl,
+          'uid': postId,
+          'likes': 0,
+        });
       }
     } catch (e) {
       Get.snackbar(

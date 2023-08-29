@@ -1,4 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/video.dart';
@@ -15,11 +14,10 @@ class VideoController extends GetxController {
     try {
       _videos = supabase.from('videos').stream(primaryKey: ['id']).map(
           (maps) => maps.map((map) => Video.fromMap(map: map)).toList());
+      update();
     } catch (e) {
       print(e.toString());
     }
-
-    update();
   }
 
   likeVideo(String id) async {

@@ -1,5 +1,3 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Video {
   String username;
   String uid;
@@ -26,20 +24,6 @@ class Video {
     required this.profilePhoto,
     required this.thumbnail,
   });
-
-  // Map<String, dynamic> toJson() => {
-  //       "username": username,
-  //       "uid": uid,
-  //       "profilePhoto": profilePhoto,
-  //       "id": id,
-  //       "likes": likes,
-  //       "commentCount": commentCount,
-  //       "shareCount": shareCount,
-  //       "songName": songName,
-  //       "caption": caption,
-  //       "videoUrl": videoUrl,
-  //       "thumbnail": thumbnail,
-  //     };
 
   factory Video.fromMap({required Map<String, dynamic> map}) {
     return Video(
