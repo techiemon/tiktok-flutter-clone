@@ -87,7 +87,9 @@ class CommentScreen extends StatelessWidget {
                                   width: 10,
                                 ),
                                 Text(
-                                  '${comment.likes.toString()} likes',
+                                  comment.likes != null
+                                      ? '${comment.likes!.length.toString()} likes'
+                                      : '0 likes',
                                   style: const TextStyle(
                                     fontSize: 12,
                                     color: Colors.white,

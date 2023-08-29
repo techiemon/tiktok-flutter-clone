@@ -2,7 +2,7 @@ class Comment {
   String username;
   String comment;
   String datePublished;
-  int likes;
+  List? likes;
   String profilePhoto;
   int uid;
   int id;

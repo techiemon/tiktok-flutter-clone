@@ -2,7 +2,7 @@ class Video {
   String username;
   String uid;
   int id;
-  int likes;
+  List? likes;
   String commentCount;
   String shareCount;
   String songName;

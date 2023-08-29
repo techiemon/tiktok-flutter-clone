@@ -15,28 +15,25 @@ class ProfileController extends GetxController {
 
   getUserData() async {
     List<String> thumbnails = [];
-    // var myVideos = await firestore
-    //     .collection('videos')
-    //     .where('uid', isEqualTo: _uid.value)
-    //     .get();
+    var myVideos = await supabase.from('videos').select().eq('uid', _uid.value);
 
-    // for (int i = 0; i < myVideos.docs.length; i++) {
-    //   thumbnails.add((myVideos.docs[i].data() as dynamic)['thumbnail']);
-    // }
+    for (int i = 0; i < myVideos.length; i++) {
+      thumbnails.add((myVideos[i] as dynamic)['thumbnail']);
+    }
 
     final profile =
         await supabase.from('profiles').select().eq('id', _uid.value).single();
 
     final profileData = ProfileUser.fromMap(map: profile);
     String profilePhoto = profileData.avatarUrl;
-    // int likes = 0;
-    // int followers = 0;
-    // int following = 0;
-    // bool isFollowing = false;
+    int likes = 0;
+    int followers = 0;
+    int following = 0;
+    bool isFollowing = false;
 
-    // for (var item in myVideos.docs) {
-    //   likes += (item.data()['likes'] as List).length;
-    // }
+    for (var item in myVideos) {
+      likes += (item['likes'] as List).length;
+    }
     // var followerDoc = await firestore
     //     .collection('users')
     //     .doc(_uid.value)
@@ -74,10 +71,10 @@ class ProfileController extends GetxController {
     //   'thumbnails': thumbnails,
     // };
     _user.value = {
-      'followers': '0',
-      'following': '0',
+      'followers': followers.toString(),
+      'following': following.toString(),
       'isFollowing': false,
-      'likes': '0',
+      'likes': likes.toString(),
       'profilePhoto': profilePhoto,
       'name': profileData.username,
       'thumbnails': thumbnails,

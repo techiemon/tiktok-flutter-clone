@@ -186,7 +186,9 @@ class VideoScreen extends StatelessWidget {
                                       ),
                                       const SizedBox(height: 7),
                                       Text(
-                                        data.likes.toString(),
+                                        data.likes != null
+                                            ? data.likes!.length.toString()
+                                            : '0',
                                         style: const TextStyle(
                                           fontSize: 20,
                                           color: Colors.white,
