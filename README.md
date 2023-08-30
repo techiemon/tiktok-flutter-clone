@@ -35,8 +35,9 @@ After cloning this repository, migrate to `tiktok-flutter-clone` folder. Then, f
 
 - Create Supabase Project
 - Enable Email/PW Authentication
-- Create Tables - run sql script
-- Add Policies - run sql script or edit manually
+- Run the following two scripts in this Supabase SQL editor
+- Create Roles - run sql script /supabase_schema/roles.sql
+- Create Tables and Policies - run sql script /supabase_schema/schema.sql
 - Create Android & iOS Emulator/Simulator
   Then run the following commands to run your app:
 
