@@ -25,7 +25,7 @@ This app was originally from a tutorial by Rivaan Ranawat, check it out on his c
   <img width="600" src="https://github.com/RivaanRanawat/tiktok-flutter-clone/blob/master/screenshot.png?raw=true" alt="Youtube Tutorial Image">
 </p>
 
-WIP Alert: I converted it from Firebase to Supabase and finished up what was incomplete in the orginal source repository. I also converted some of the code to use StreamProvider instead of GetX as in the orginal because this suited Supabase better imo.
+I converted it from Firebase to Supabase to learn to work with Supabase. I also converted some of the real time code to use StreamProvider.
 
 Since this is Supabase and not Firebase there is addition steps to setting up the DB, the tables need defining before continuing.
 
