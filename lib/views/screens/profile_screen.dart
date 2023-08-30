@@ -191,7 +191,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 child: Text(
                                   widget.uid == supabase.auth.currentUser!.id
                                       ? 'Sign Out'
-                                      : controller.user['isFollowing']
+                                      : controller.user['isFollowing'] == true
                                           ? 'Unfollow'
                                           : 'Follow',
                                   style: const TextStyle(

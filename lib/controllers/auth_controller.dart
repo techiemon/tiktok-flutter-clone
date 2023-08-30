@@ -31,7 +31,7 @@ class AuthController extends GetxController {
 
       if (event == AuthChangeEvent.signedIn) {
         _user.value = session!.user;
-        update();
+
         var profileData = await supabase
             .from('profiles')
             .select('id, username, avatar_url')
@@ -44,33 +44,15 @@ class AuthController extends GetxController {
               email: user.email,
               id: user.id,
               avatarUrl: d['avatar_url']);
-          update();
         }
       } else if (event == AuthChangeEvent.signedOut) {
         _user.value = null;
       }
+      update();
     });
 
     ever(_user, _setInitialScreen);
   }
-
-  // Future<dynamic> _getProfile() async {
-  //   try {
-  //     // any way to avoid this?
-
-  //     final profileData = await supabase
-  //         .from('profiles')
-  //         .select('id, username, avatar_url')
-  //         .eq('id', user.id)
-  //         .single();
-  //     return profileData;
-  //   } catch (e) {
-  //     Get.snackbar(
-  //       'Error fetching profile',
-  //       e.toString(),
-  //     );
-  //   }
-  // }
 
   _setInitialScreen(user) {
     if (user == null) {

@@ -1,3 +1,5 @@
+import 'package:tiktok_tutorial/constants.dart';
+
 class Video {
   String username;
   String uid;
@@ -24,6 +26,16 @@ class Video {
     required this.profilePhoto,
     required this.thumbnail,
   });
+
+  getCommentCount(int videoID) async {
+    final comments = await supabase
+        .from('videos')
+        .select()
+        .eq('uid', videoID)
+        .then((value) => value.length);
+    // var comments = video['comments'] ?? [];
+    return comments.length.toString();
+  }
 
   factory Video.fromMap({required Map<String, dynamic> map}) {
     return Video(
