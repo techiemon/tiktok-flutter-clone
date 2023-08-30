@@ -35,46 +35,23 @@ class ProfileController extends GetxController {
     for (var item in myVideos) {
       likes += (item['likes'] as List).length;
     }
-    // var followerDoc = await firestore
-    //     .collection('users')
-    //     .doc(_uid.value)
-    //     .collection('followers')
-    //     .get();
-    // var followingDoc = await firestore
-    //     .collection('users')
-    //     .doc(_uid.value)
-    //     .collection('following')
-    //     .get();
-    // followers = followerDoc.docs.length;
-    // following = followingDoc.docs.length;
 
-    // firestore
-    //     .collection('users')
-    //     .doc(_uid.value)
-    //     .collection('followers')
-    //     .doc(authController.user.id)
-    //     .get()
-    //     .then((value) {
-    //   if (value.exists) {
-    //     isFollowing = true;
-    //   } else {
-    //     isFollowing = false;
-    //   }
-    // });
+    var followerDoc = profileData.followers;
+    var followingDoc = profileData.following;
 
-    // _user.value = {
-    //   'followers': followers.toString(),
-    //   'following': following.toString(),
-    //   'isFollowing': isFollowing,
-    //   'likes': likes.toString(),
-    //   'profilePhoto': profilePhoto,
-    //   'name': name,
-    //   'thumbnails': thumbnails,
-    // };
+    followers = followerDoc!.length;
+    following = followingDoc!.length;
+
+    if (followerDoc.contains(authController.user.id)) {
+      isFollowing = true;
+    } else {
+      isFollowing = false;
+    }
+
     _user.value = {
       'followers': followers.toString(),
       'following': following.toString(),
-      'isFollowing': false,
+      'isFollowing': isFollowing,
       'likes': likes.toString(),
       'profilePhoto': profilePhoto,
       'name': profileData.username,
@@ -84,50 +61,92 @@ class ProfileController extends GetxController {
   }
 
   followUser() async {
-    var doc = null; // TODO
-    // var doc = await firestore
-    //     .collection('users')
-    //     .doc(_uid.value)
-    //     .collection('followers')
-    //     .doc(authController.user.id)
-    //     .get();
+    final profile =
+        await supabase.from('profiles').select().eq('id', _uid.value).single();
+    final profileId = profile['id'];
 
-    if (!doc.exists) {
-      // await firestore
-      //     .collection('users')
-      //     .doc(_uid.value)
-      //     .collection('followers')
-      //     .doc(authController.user.id)
-      //     .set({});
-      // await firestore
-      //     .collection('users')
-      //     .doc(authController.user.id)
-      //     .collection('following')
-      //     .doc(_uid.value)
-      //     .set({});
-      _user.value.update(
-        'followers',
-        (value) => (int.parse(value) + 1).toString(),
-      );
+    final currentUser = await supabase
+        .from('profiles')
+        .select()
+        .eq('id', authController.user.id)
+        .single();
+    final currentUserId = currentUser['id'];
+
+    var followerDoc = profile['followers'] ?? [];
+    var followers = [];
+    followerDoc.forEach((element) {
+      followers.add(element);
+    });
+
+    if (followerDoc.contains(currentUserId)) {
+      followers.remove(currentUserId);
+      try {
+        await supabase
+            .from('profiles')
+            .update({'followers': followers}).eq('id', profileId);
+      } catch (e) {
+        Get.snackbar(
+          'Error updating followers',
+          e.toString(),
+        );
+      }
     } else {
-      // await firestore
-      //     .collection('users')
-      //     .doc(_uid.value)
-      //     .collection('followers')
-      //     .doc(authController.user.id)
-      //     .delete();
-      // await firestore
-      //     .collection('users')
-      //     .doc(authController.user.id)
-      //     .collection('following')
-      //     .doc(_uid.value)
-      //     .delete();
-      _user.value.update(
-        'followers',
-        (value) => (int.parse(value) - 1).toString(),
-      );
+      followers.add(currentUserId);
+      try {
+        // This design of followers breaks RLS TODO: Fix this
+        await supabase
+            .from('profiles')
+            .update({'followers': followers}).match({'id': profileId});
+      } catch (e) {
+        Get.snackbar(
+          'Error updating followers',
+          e.toString(),
+        );
+      }
     }
-    _user.value.update('isFollowing', (value) => !value);
+
+    _user.value.update(
+      'followers',
+      (value) => followers.length.toString(),
+    );
+
+    var followingDoc = currentUser['following'] ?? [];
+    var following = [];
+    followingDoc.forEach((element) {
+      following.add(element);
+    });
+    if (followingDoc.contains(_uid.value)) {
+      following.remove(_uid.value);
+      try {
+        await supabase
+            .from('profiles')
+            .update({'following': following}).eq('id', currentUserId);
+        _user.value.update('isFollowing', (value) => false);
+      } on Exception catch (e) {
+        Get.snackbar(
+          'Error updating following',
+          e.toString(),
+        );
+      }
+    } else {
+      following.add(_uid.value);
+      try {
+        await supabase
+            .from('profiles')
+            .update({'following': following}).eq('id', currentUserId);
+        _user.value.update('isFollowing', (value) => true);
+      } on Exception catch (e) {
+        Get.snackbar(
+          'Error updating following',
+          e.toString(),
+        );
+      }
+    }
+
+    _user.value.update(
+      'following',
+      (value) => following.length.toString(),
+    );
     update();
   }
 }

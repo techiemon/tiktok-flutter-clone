@@ -31,7 +31,7 @@ class AuthController extends GetxController {
 
       if (event == AuthChangeEvent.signedIn) {
         _user.value = session!.user;
-        update();
+
         var profileData = await supabase
             .from('profiles')
             .select('id, username, avatar_url')
@@ -44,11 +44,11 @@ class AuthController extends GetxController {
               email: user.email,
               id: user.id,
               avatarUrl: d['avatar_url']);
-          update();
         }
       } else if (event == AuthChangeEvent.signedOut) {
         _user.value = null;
       }
+      update();
     });
 
     ever(_user, _setInitialScreen);
