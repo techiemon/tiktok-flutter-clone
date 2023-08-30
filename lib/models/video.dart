@@ -33,7 +33,7 @@ class Video {
         .select()
         .eq('uid', videoID)
         .then((value) => value.length);
-    // var comments = video['comments'] ?? [];
+
     return comments.length.toString();
   }
 

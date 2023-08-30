@@ -15,7 +15,6 @@ class ProfileController extends GetxController {
 
   getUserData() async {
     List<String> thumbnails = [];
-    // final user_id = _uid.value.isNo ? _uid.value : authController.user.id;
     var myVideos = await supabase.from('videos').select().eq('uid', _uid.value);
 
     for (int i = 0; i < myVideos.length; i++) {

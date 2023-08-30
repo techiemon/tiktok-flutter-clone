@@ -3,12 +3,8 @@ import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/models/user_profile.dart';
 
 class UserSearchController extends GetxController {
-  // late Stream<List<ProfileUser>> _searchedUsers;
-
   final Rx<List<ProfileUser>> _users = Rx<List<ProfileUser>>([]);
   List<ProfileUser> get users => _users.value;
-
-  // Stream<List<ProfileUser>> get searchedUsers => _searchedUsers;
 
   @override
   Future<void> onInit() async {

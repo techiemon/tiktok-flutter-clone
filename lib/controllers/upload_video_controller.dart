@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:tiktok_tutorial/constants.dart';
-// import 'package:tiktok_tutorial/models/video.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:uuid/uuid.dart';
 
@@ -55,7 +54,6 @@ class UploadVideoController extends GetxController {
 
       // create video object
       await supabase.from('videos').insert({
-        // 'id': uuid,
         'uid': uid,
         'username': authController.userProfile!.username,
         'likes': [],

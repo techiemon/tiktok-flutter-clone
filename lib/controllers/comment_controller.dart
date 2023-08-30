@@ -73,6 +73,7 @@ class CommentController extends GetxController {
     if (commentLikes.contains(uid)) {
       likes.remove(uid);
       try {
+        // TODO: No RLP on this.
         await supabase
             .from('comments')
             .update({'likes': likes}).eq('id', int.parse(id));
@@ -95,32 +96,5 @@ class CommentController extends GetxController {
         );
       }
     }
-
-    // DocumentSnapshot doc = await firestore
-    //     .collection('videos')
-    //     .doc(_postId)
-    //     .collection('comments')
-    //     .doc(id)
-    //     .get();
-
-    // if ((doc.data()! as dynamic)['likes'].contains(uid)) {
-    //   await firestore
-    //       .collection('videos')
-    //       .doc(_postId)
-    //       .collection('comments')
-    //       .doc(id)
-    //       .update({
-    //     'likes': FieldValue.arrayRemove([uid]),
-    //   });
-    // } else {
-    //   await firestore
-    //       .collection('videos')
-    //       .doc(_postId)
-    //       .collection('comments')
-    //       .doc(id)
-    //       .update({
-    //     'likes': FieldValue.arrayUnion([uid]),
-    //   });
-    // }
   }
 }

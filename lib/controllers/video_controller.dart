@@ -14,13 +14,8 @@ class VideoController extends GetxController {
     super.onInit();
 
     try {
-      _videos = supabase
-          .from('videos')
-          .stream(primaryKey: ['id']).map((maps) => maps.map((map) {
-                // map.from
-                return Video.fromMap(map: map);
-              }).toList());
-      update();
+      _videos = supabase.from('videos').stream(primaryKey: ['id']).map(
+          (maps) => maps.map((map) => Video.fromMap(map: map)).toList());
     } catch (e) {
       Get.snackbar(
         'Error getting videos',
