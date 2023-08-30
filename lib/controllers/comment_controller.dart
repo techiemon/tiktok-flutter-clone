@@ -11,13 +11,11 @@ class CommentController extends GetxController {
 
   updatePostId(String id) {
     _postId = id;
-    getComment();
+    getComments();
   }
 
-  getComment() async {
+  getComments() async {
     try {
-      var wtf = postId.isEmpty ? "*" : postId;
-      print(wtf);
       _comments = supabase
           .from('comments')
           .stream(primaryKey: ['id'])
@@ -43,6 +41,12 @@ class CommentController extends GetxController {
           'uid': postId,
           'likes': [],
         });
+        final video =
+            await supabase.from('videos').select().eq('id', postId).single();
+
+        await supabase.from('videos').update({
+          'commentCount': int.parse(video['commentCount']) + 1,
+        }).eq('id', postId);
       }
     } catch (e) {
       Get.snackbar(
@@ -54,6 +58,44 @@ class CommentController extends GetxController {
 
   likeComment(String id) async {
     var uid = authController.user.id;
+    final comment = await supabase
+        .from('comments')
+        .select()
+        .eq('id', int.parse(id))
+        .single();
+
+    final commentLikes = comment?['likes'] ?? [];
+    var likes = [];
+    commentLikes.forEach((element) {
+      likes.add(element);
+    });
+
+    if (commentLikes.contains(uid)) {
+      likes.remove(uid);
+      try {
+        await supabase
+            .from('comments')
+            .update({'likes': likes}).eq('id', int.parse(id));
+      } on Exception catch (e) {
+        Get.snackbar(
+          'Error updating likes',
+          e.toString(),
+        );
+      }
+    } else {
+      likes.add(uid);
+      try {
+        await supabase
+            .from('comments')
+            .update({'likes': likes}).eq('id', int.parse(id));
+      } on Exception catch (e) {
+        Get.snackbar(
+          'Error updating likes',
+          e.toString(),
+        );
+      }
+    }
+
     // DocumentSnapshot doc = await firestore
     //     .collection('videos')
     //     .doc(_postId)

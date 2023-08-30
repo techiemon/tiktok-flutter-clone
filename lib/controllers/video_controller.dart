@@ -14,8 +14,12 @@ class VideoController extends GetxController {
     super.onInit();
 
     try {
-      _videos = supabase.from('videos').stream(primaryKey: ['id']).map(
-          (maps) => maps.map((map) => Video.fromMap(map: map)).toList());
+      _videos = supabase
+          .from('videos')
+          .stream(primaryKey: ['id']).map((maps) => maps.map((map) {
+                // map.from
+                return Video.fromMap(map: map);
+              }).toList());
       update();
     } catch (e) {
       Get.snackbar(
@@ -23,6 +27,16 @@ class VideoController extends GetxController {
         e.toString(),
       );
     }
+  }
+
+  getCommentCount(int videoID) async {
+    final comments = await supabase
+        .from('videos')
+        .select()
+        .eq('uid', videoID as int)
+        .then((value) => value.length);
+    // var comments = video['comments'] ?? [];
+    return comments.length.toString();
   }
 
   likeVideo(String id) async {

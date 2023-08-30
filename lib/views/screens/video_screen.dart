@@ -3,6 +3,7 @@ import 'package:tiktok_tutorial/constants.dart';
 import 'package:tiktok_tutorial/controllers/video_controller.dart';
 import 'package:tiktok_tutorial/models/video.dart';
 import 'package:tiktok_tutorial/views/screens/comment_screen.dart';
+import 'package:tiktok_tutorial/views/screens/profile_screen.dart';
 import 'package:tiktok_tutorial/views/widgets/circle_animation.dart';
 import 'package:tiktok_tutorial/views/widgets/video_player_iten.dart';
 import 'package:get/get.dart';
@@ -80,7 +81,6 @@ class VideoScreen extends StatelessWidget {
       builder: ((context, snapshot) {
         if (snapshot.hasData) {
           final videos = snapshot.data;
-
           return PageView.builder(
             itemCount: videos!.length,
             controller: PageController(initialPage: 0, viewportFraction: 1),
@@ -166,8 +166,16 @@ class VideoScreen extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
                                 children: [
-                                  buildProfile(
-                                    publicProfileUrl,
+                                  InkWell(
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => ProfileScreen(
+                                            uid: data.uid.toString()),
+                                      ),
+                                    ),
+                                    child: buildProfile(
+                                      publicProfileUrl,
+                                    ),
                                   ),
                                   Column(
                                     children: [
