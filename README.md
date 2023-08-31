@@ -44,7 +44,7 @@ After cloning this repository, migrate to `tiktok-flutter-clone` folder. Then, f
 ```bash
   flutter pub get
   open -a simulator (to get iOS Simulator)
-  flutter run
+  flutter run lib/main.dart --dart-define=SUPABASE_URL=url --dart-define=SUPABASE_ANNON_KEY=key
 ```
 
 ## Tech Used

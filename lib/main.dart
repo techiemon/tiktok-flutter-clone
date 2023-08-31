@@ -7,11 +7,19 @@ import 'package:tiktok_tutorial/views/screens/auth/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  const String supabaseUrl = String.fromEnvironment(
+    'SUPABASE_URL',
+    defaultValue: '',
+  );
+
+  const String supabaseAnnonKey = String.fromEnvironment(
+    'SUPABASE_ANNON_KEY',
+    defaultValue: '',
+  );
 
   await Supabase.initialize(
-    url: 'https://swaoxzcuelanpcmlpsjs.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3YW94emN1ZWxhbnBjbWxwc2pzIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTI5Nzk3NTcsImV4cCI6MjAwODU1NTc1N30.azkfQFTJvrF3EdkOfNm0bJGzz0MyKM7hQ3ykv2Df-Og',
+    url: supabaseUrl,
+    anonKey: supabaseAnnonKey,
   ).then((value) {
     Get.put(AuthController());
   });
